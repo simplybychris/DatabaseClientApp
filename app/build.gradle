@@ -29,11 +29,13 @@ android {
 }
 
 dependencies {
-
+//    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.4'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation files('libs\\mysql-connector-java-8.0.22.jar')
+    implementation files('libs\\mysql-connector-java-5.1.49.jar')
+    implementation 'androidx.navigation:navigation-fragment:2.3.2'
+    implementation 'androidx.navigation:navigation-ui:2.3.2'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
