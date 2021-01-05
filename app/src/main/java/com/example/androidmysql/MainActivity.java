@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /**
         // get LinearLayout
         LinearLayout ll = (LinearLayout) findViewById(R.id.tablesWrapper);
 
@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         }).execute("tables");
 
+        */
 
 //        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.INTERNET}, PackageManager.PERMISSION_GRANTED);
 //

@@ -1,4 +1,4 @@
-package com.example.androidmysql;
+package com.example.androidmysql.data;
 
 import java.util.List;
 

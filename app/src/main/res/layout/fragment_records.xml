@@ -4,15 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TablesFragment">
+    tools:context=".RecordsListFragment">
 
     <LinearLayout
-        android:id="@+id/tablesLayout"
+        android:id="@+id/recordsWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/tableNameText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/recordlist_fragment"
+            android:textSize="40sp" />
     </LinearLayout>
 
 </ScrollView>

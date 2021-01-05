@@ -1,4 +1,4 @@
-package com.example.androidmysql;
+package com.example.androidmysql.data;
 
 import android.os.AsyncTask;
 

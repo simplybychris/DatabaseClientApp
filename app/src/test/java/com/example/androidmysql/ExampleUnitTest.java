@@ -1,6 +1,10 @@
 package com.example.androidmysql;
 
 import org.junit.Test;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import static org.junit.Assert.*;
 
@@ -14,4 +18,5 @@ public class ExampleUnitTest {
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
     }
+
 }
