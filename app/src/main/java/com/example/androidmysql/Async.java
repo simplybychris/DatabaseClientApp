@@ -13,9 +13,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Async extends AsyncTask<String, Void, Void> {
-    String records = "", error = "";
+    String error = "";
     Integer columncount = 0, rowcount = 0;
-    List<String> columnNamesList = new ArrayList<>();
+    List<String> recordsList = new ArrayList<>();
+    List<String> columnsList = new ArrayList<>();
 
     public AsyncResponse delegate = null;
 
@@ -50,7 +51,7 @@ public class Async extends AsyncTask<String, Void, Void> {
 
                 while (resultSet.next()) {
 
-                    records += resultSet.getString(1) + "\n";
+                    recordsList.add(resultSet.getString(1));
                 }
             } catch (Exception e) {
                 error = e.toString();
@@ -78,12 +79,12 @@ public class Async extends AsyncTask<String, Void, Void> {
 //                 ===  Columns name  ===
                 for (int i = 1; i <= columncount; i++) {
                     String name = md.getColumnName(i);
-                    columnNamesList.add(name);
+                    columnsList.add(name);
                 }
 
                 while (resultSet.next()) {
 
-                    records += resultSet.getString(1) + " " + resultSet.getString(2) + "\n";
+                    recordsList.add(resultSet.getString(1));
                 }
                 System.out.println("Records fetched successfully");
             } catch (Exception e) {
@@ -109,7 +110,7 @@ public class Async extends AsyncTask<String, Void, Void> {
                 System.out.println("Record deleted successfully");
                 while (resultSet.next()) {
 
-                    records += resultSet.getString(1) + " " + resultSet.getString(2) + "\n";
+                    recordsList.add(resultSet.getString(1));
                 }
 
             } catch (Exception e) {
@@ -126,7 +127,7 @@ public class Async extends AsyncTask<String, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        delegate.processFinish(records);
+        delegate.processFinish(recordsList);
     }
 //    @Override
 //    protected void onPostExecute(Void aVoid) {

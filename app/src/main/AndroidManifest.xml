@@ -11,10 +11,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidMySQL">
-        <activity
-            android:name=".MainActivity2"
+        <activity android:name=".MainActivity2"
             android:label="@string/title_activity_main2"
-            android:theme="@style/Theme.AndroidMySQL.NoActionBar"></activity>
+            android:parentActivityName=".MainActivity"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity android:name=".MainActivity" android:label="Database Tables">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

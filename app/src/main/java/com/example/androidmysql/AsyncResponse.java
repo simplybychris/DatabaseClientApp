@@ -1,6 +1,8 @@
 package com.example.androidmysql;
 
+import java.util.List;
+
 public interface AsyncResponse {
 
-    void processFinish(String records);
+    void processFinish(List records);
 }
