@@ -2,6 +2,7 @@ package com.example.androidmysql.data;
 
 import android.os.AsyncTask;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -13,10 +14,27 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Async extends AsyncTask<String, Void, Void> {
+    private String alias;
+    private String host;
+    private String port;
+    private String database;
+    private String user;
+    private String password;
+
+    public Async(String alias, String host, String port, String database, String user, String password) {
+        this.alias = alias;
+        this.host = host;
+        this.port = port;
+        this.database = database;
+        this.user = user;
+        this.password = password;
+    }
+
     String error = "";
-    Integer columncount = 0, rowcount = 0;
+    Integer columncount = 0;
     List<String> recordsList = new ArrayList<>();
-    List<String> columnsList = new ArrayList<>();
+    List<List> nestedList = new ArrayList<>();
+    ArrayList<String> columnsList = new ArrayList<>();
 
     public AsyncResponse delegate = null;
 
@@ -45,10 +63,9 @@ public class Async extends AsyncTask<String, Void, Void> {
         if (Arrays.asList(command).contains("tables")) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection("jdbc:mysql://192.168.0.18/android", "andro", "andro");
+                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/android", "andro", "andro");
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery("show tables");
-
                 while (resultSet.next()) {
 
                     recordsList.add(resultSet.getString(1));
@@ -63,28 +80,26 @@ public class Async extends AsyncTask<String, Void, Void> {
         if (Arrays.asList(command).contains("show")) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection("jdbc:mysql://192.168.0.18:3306/android", "andro", "andro");
+                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/android", "andro", "andro");
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM " + queryTable);
                 ResultSetMetaData md = resultSet.getMetaData();
-
-//                 ===  Column count  ===
+//
+////                 ===  Column count  ===
                 columncount = md.getColumnCount();
-
-//                 ===  Row count  ===
-                resultSet.last();
-                rowcount = resultSet.getRow();
-                resultSet.beforeFirst();
-
-//                 ===  Columns name  ===
+////                 ===  Columns name  ===
                 for (int i = 1; i <= columncount; i++) {
                     String name = md.getColumnName(i);
                     columnsList.add(name);
                 }
+                nestedList.add(columnsList);
 
                 while (resultSet.next()) {
-
-                    recordsList.add(resultSet.getString(1));
+                    ArrayList<String> rowRecord = new ArrayList();
+                    for(int i=1;i<=columncount;i++){
+                        rowRecord.add(resultSet.getString(i));
+                    }
+                    nestedList.add(rowRecord);
                 }
                 System.out.println("Records fetched successfully");
             } catch (Exception e) {
@@ -127,7 +142,11 @@ public class Async extends AsyncTask<String, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        delegate.processFinish(recordsList);
+        if(!nestedList.isEmpty()){
+            delegate.processFinish(nestedList);
+        } else{
+            delegate.processFinish(recordsList);
+        }
     }
 //    @Override
 //    protected void onPostExecute(Void aVoid) {

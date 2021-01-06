@@ -1,60 +1,45 @@
 package com.example.androidmysql;
 
+import android.app.ActionBar;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RecordsListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.androidmysql.data.Async;
+import com.example.androidmysql.data.AsyncResponse;
+import com.google.android.material.button.MaterialButton;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.zip.Inflater;
+
 public class RecordsListFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public RecordsListFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentRecordList.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RecordsListFragment newInstance(String param1, String param2) {
-        RecordsListFragment fragment = new RecordsListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+        //Set title bar
+        ((MainActivity) getActivity()).setActionBarTitle(RecordsListFragmentArgs.fromBundle(getArguments()).getTableName()+" RECORDS");
+
     }
 
     @Override
@@ -63,16 +48,143 @@ public class RecordsListFragment extends Fragment {
 
         // get view
         View root = inflater.inflate(R.layout.fragment_records, null);
-        // get LinearLayout
-        LinearLayout ll = root.findViewById(R.id.recordsWrapper);
-        // get textView
-        TextView text = ll.findViewById(R.id.tableNameText);
+        // get tableLayout
+        TableLayout tlGridTable = root.findViewById(R.id.tlGridTable);
 
-        if(getArguments() != null){
+
+        String tableName = "";
+        if (getArguments() != null) {
             RecordsListFragmentArgs args = RecordsListFragmentArgs.fromBundle(getArguments());
-            String tableName = args.getTableName();
-            text.setText(tableName);
+            tableName = args.getTableName();
         }
+
+        Async asyncTask = (Async) new Async(new AsyncResponse() {
+
+            @Override
+            public void processFinish(List records) {
+                for (int i = 0; i < records.size(); i++) { // iteracja po rzedach
+                    List rowRecord = (List) records.get(i);
+                    TableRow tRow = new TableRow(getActivity());
+//            tRow.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    tRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+                    if (i % 2 == 0) {
+                        tRow.setBackgroundResource(R.drawable.table);
+                    }
+                    tRow.setBackgroundResource(R.drawable.border);
+
+//            tRow.setId(generateRandomId(inflater));
+//            String[] record = new Sstring[10]; //tam gdzie 10 to idzie size ile jest kolumn
+                    for (int j = 0; j < rowRecord.size(); j++) { // iteracja po kolumnach, czyli kolejne stringi listy w liscie
+                        String generatedString = (String) rowRecord.get(j);
+                        rowRecord.iterator().next();
+                        TextView txt = new TextView(getActivity());
+                        txt.setId(generateRandomId(inflater));
+                        txt.setGravity(Gravity.CENTER);
+                        txt.setText(generatedString);
+                        txt.setLayoutParams(new TableRow.LayoutParams(
+                                TableRow.LayoutParams.WRAP_CONTENT,
+                                TableRow.LayoutParams.WRAP_CONTENT));
+                        txt.setTextSize(20);
+                        txt.setTextColor(Color.DKGRAY);
+                        txt.setClickable(true);
+//                        TypedValue outValue = new TypedValuibute(android.R.attr.selectableItee();
+////                        getContext().getTheme().resolveAttrmBackground, outValue, true);
+//                        txt.setBackgroundResource(outValue.resourceId);
+                        txt.setBackgroundResource(R.drawable.border);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            int[] attrs = new int[]{R.attr.selectableItemBackground};
+                            TypedArray typedArray = getContext().obtainStyledAttributes(attrs);
+                            int selectableItemBackground = typedArray.getResourceId(0, 0);
+                            txt.setForeground(getContext().getDrawable(selectableItemBackground));
+                        }
+                        txt.setPadding(20, 10, 20, 10);
+                        if (i == 0) {
+                            txt.setTypeface(null, Typeface.BOLD);
+                            txt.setPadding(20, 20, 20, 20);
+                        }
+//                        txt.setBackgroundResource(R.drawable.table);
+                        if (i % 2 == 0) {
+                            txt.setBackgroundResource(R.drawable.table);
+                        }
+
+                        txt.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                System.out.println("You've clicked " + txt.getText());
+//                                tableName = btn.getText().toString();
+//                                Navigation.findNavController(v).navigate(TablesFragmentDirections.actionTablesFragment2ToRecordsListFragment(tableName));
+//                            Intent intent = new Intent(getActivity(), MainActivity2.class);
+//                            String tableName = (String) btn.getText();
+//                            intent.putExtra(EXTRA_TABLE_NAME, tableName);
+//                            startActivity(intent);
+
+                            }
+                        });
+                        tRow.addView(txt);
+                    }
+                    tlGridTable.addView(tRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                }
+            }
+        }).execute("show " + tableName);
+
+
+//        //todo dodac do tabeli header
+//
+//        // add records to table
+//        Async asyncTask = (Async) new Async(new AsyncResponse() {
+//
+//            @Override
+//            public void processFinish(List value) {
+//                List<String> recordsList = value;
+//                int i = 0;
+//
+//                for (String record : recordsList) {
+//                    MaterialButton btn = new MaterialButton(getActivity());
+//                    btn.setText(record.toUpperCase());
+//                    int j = 0;
+//                    do {
+//                        j = new Random().nextInt();
+//                    } while (root.findViewById(j) != null);
+//                    // todo dodac nowy row
+//
+//                    btn.setOnClickListener(new View.OnClickListener() {
+//
+//                        @Override
+//                        public void onClick(View v) {
+//                            //todo onclik wyswietlaj dropdown z opcjami: edytuj, usun, status(ilosc row, updated...)
+////                            Intent intent = new Intent(getActivity(), MainActivity2.class);
+////                            String tableName = (String) btn.getText();
+////                            intent.putExtra(EXTRA_TABLE_NAME, tableName);
+////                            startActivity(intent);
+//
+//                        }
+//                    });
+//
+////                    TODO dodać addEventListener() przy kliknieciu przenosi do MainActivity2 z parametrami takimi jak nazwa tabeli
+//
+//
+//                    i++;
+//                }
+//                ;
+//            }
+//
+//            ;
+//
+//
+//        }).execute("show "+tableName);
+//
         return root;
+    }
+
+    public int generateRandomId(LayoutInflater inflater) {
+        View root = inflater.inflate(R.layout.fragment_records, null);
+        int id = 0;
+        do {
+            id = new Random().nextInt();
+        } while (root.findViewById(id) != null);
+
+        return id;
     }
 }

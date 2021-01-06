@@ -1,6 +1,7 @@
 package com.example.androidmysql;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -131,6 +132,14 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
 
+    }
+
+    public void setActionBarTitle(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(title);
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
     }
 }
 
