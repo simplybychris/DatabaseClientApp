@@ -14,21 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Async extends AsyncTask<String, Void, Void> {
-    private String alias;
-    private String host;
-    private String port;
-    private String database;
-    private String user;
-    private String password;
 
-    public Async(String alias, String host, String port, String database, String user, String password) {
-        this.alias = alias;
-        this.host = host;
-        this.port = port;
-        this.database = database;
-        this.user = user;
-        this.password = password;
-    }
+    private static final String DRIVER = "com.mysql.jdbc.Driver";
+    private String host = "localhost";
+    private String port = "3306";
+    private String database="android";
+    private String user = "andro";
+    private String password="andro";
 
     String error = "";
     Integer columncount = 0;
@@ -62,8 +54,8 @@ public class Async extends AsyncTask<String, Void, Void> {
          */
         if (Arrays.asList(command).contains("tables")) {
             try {
-                Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/android", "andro", "andro");
+                Class.forName(DRIVER);
+                Connection connection = DriverManager.getConnection("jdbc:mysql://"+host+":"+port+"/"+database, user, password);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery("show tables");
                 while (resultSet.next()) {
@@ -80,7 +72,7 @@ public class Async extends AsyncTask<String, Void, Void> {
         if (Arrays.asList(command).contains("show")) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/android", "andro", "andro");
+                Connection connection = DriverManager.getConnection("jdbc:mysql://"+host+":"+port+"/"+database, user, password);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM " + queryTable);
                 ResultSetMetaData md = resultSet.getMetaData();
@@ -108,7 +100,7 @@ public class Async extends AsyncTask<String, Void, Void> {
         } else if (Arrays.asList(command).contains("delete")) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection("jdbc:mysql://192.168.0.18:3306/android", "andro", "andro");
+                Connection connection = DriverManager.getConnection("jdbc:mysql://"+host+":"+port+"/"+database, user, password);
                 DatabaseMetaData md = connection.getMetaData();
                 ResultSet resultSet = md.getPrimaryKeys(null, null, queryTable);
 

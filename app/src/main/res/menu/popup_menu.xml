@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/group1">
+        <item android:id="@+id/copy_column"
+            android:title="Copy column" />
+        <item android:id="@+id/copy_row"
+            android:title="Copy Row" />
+    </group>
+    <group android:id="@+id/group2">
+    <item android:id="@+id/option_1"
+        android:title="Add" />
+    <item android:id="@+id/option_2"
+        android:title="Edit" />
+    <item android:id="@+id/option_3"
+        android:title="Delete" />
+</group>
+</menu>
