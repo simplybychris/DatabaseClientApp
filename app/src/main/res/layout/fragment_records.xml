@@ -7,7 +7,7 @@
     <ScrollView
         android:id="@+id/layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:fillViewport="true"
         android:scrollbarStyle="outsideInset"
         android:scrollbars="horizontal|vertical">
@@ -15,10 +15,11 @@
         <HorizontalScrollView
             android:id="@+id/horizontalView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:scrollbars="horizontal|vertical">
 
             <TableLayout
+                android:stretchColumns="0"
                 android:id="@+id/tlGridTable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

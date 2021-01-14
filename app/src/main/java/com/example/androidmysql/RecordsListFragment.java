@@ -73,87 +73,85 @@ public class RecordsListFragment extends Fragment {
         }
 
         Async asyncTask = (Async) new Async(new AsyncResponse() {
-
             @Override
             public void processFinish(List records) {
-                for (int i = 0; i < records.size(); i++) { // iteracja po rzedach
-                    List rowRecord = (List) records.get(i);
-                    TableRow tRow = new TableRow(getActivity());
-//            tRow.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                    tRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-
-                    if (i % 2 == 0) {
-                        tRow.setBackgroundResource(R.drawable.table);
-                    }
-                    tRow.setBackgroundResource(R.drawable.border);
-
-                    for (int j = 0; j < rowRecord.size(); j++) {
-                        String generatedString = (String) rowRecord.get(j);
-                        rowRecord.iterator().next();
-                        TextView txt = new TextView(getActivity());
-                        txt.setId(generateRandomId(inflater));
-                        txt.setGravity(Gravity.CENTER);
-                        txt.setText(generatedString);
-                        txt.setLayoutParams(new TableRow.LayoutParams(
-                                TableRow.LayoutParams.WRAP_CONTENT,
-                                TableRow.LayoutParams.WRAP_CONTENT));
-                        txt.setTextSize(20);
-                        txt.setTextColor(Color.DKGRAY);
-                        txt.setClickable(true);
-                        txt.setBackgroundResource(R.drawable.border);
-
-                        //setting selectaleItemBackground as foreground
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            int[] attrs = new int[]{R.attr.selectableItemBackground};
-                            TypedArray typedArray = getContext().obtainStyledAttributes(attrs);
-                            int selectableItemBackground = typedArray.getResourceId(0, 0);
-                            txt.setForeground(getContext().getDrawable(selectableItemBackground));
-                        }
-                        txt.setPadding(20, 10, 20, 10);
-
-//                        txt.setBackgroundResource(R.drawable.table);
-                        if (i % 2 == 0) {
-                            txt.setBackgroundResource(R.drawable.table);
-                        }
-
-                        txt.setOnClickListener(new View.OnClickListener() {
-
-                            @Override
-                            public void onClick(View v) {
-                                System.out.println("You've clicked " + txt.getText());
-                                choosedCell[0] = txt;
-                                popup_window(v);
-                            }
-                        });
-
-                        if (i == 0) {
-                            txt.setTypeface(null, Typeface.BOLD);
-                            txt.setPadding(20, 20, 20, 20);
-                            txt.setOnClickListener(null);
-                        }
-                        tRow.addView(txt);
-                    }
-                    tlGridTable.addView(tRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                }
+                refreshTable(root, records);
             }
         }).execute("show " + tableName);
         return root;
     }
 
-    public int generateRandomId(LayoutInflater inflater) {
-        View root = inflater.inflate(R.layout.fragment_records, null);
+    public int generateRandomId(View v) {
         int id = 0;
         do {
             id = new Random().nextInt();
-        } while (root.findViewById(id) != null);
+        } while (v.findViewById(id) != null);
 
         return id;
     }
 
-//    public void refreshTable(View v, List records) {
-//        TableLayout tl = v.findViewById(R.id.tlGridTable);
-//        tl.removeAllViews();
-//    }
+    public void refreshTable(View v, List records) {
+        // get root view
+        TableLayout tlGridTable = v.findViewById(R.id.tlGridTable);
+        tlGridTable.removeAllViews();
+
+        for (int i = 0; i < records.size(); i++) { // iteracja po rzedach
+            List rowRecord = (List) records.get(i);
+            TableRow tRow = new TableRow(getActivity());
+            tRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+            if (i % 2 == 0) {
+                tRow.setBackgroundResource(R.drawable.table);
+            }
+            tRow.setBackgroundResource(R.drawable.border);
+
+            for (int j = 0; j < rowRecord.size(); j++) {
+                String generatedString = (String) rowRecord.get(j);
+                rowRecord.iterator().next();
+                TextView txt = new TextView(getActivity());
+                txt.setId(generateRandomId(v));
+                txt.setGravity(Gravity.CENTER);
+                txt.setText(generatedString);
+                txt.setLayoutParams(new TableRow.LayoutParams(
+                        TableRow.LayoutParams.MATCH_PARENT,
+                        TableRow.LayoutParams.WRAP_CONTENT));
+                txt.setTextSize(20);
+                txt.setTextColor(Color.DKGRAY);
+                txt.setClickable(true);
+                txt.setBackgroundResource(R.drawable.border);
+
+                //setting selectaleItemBackground as foreground
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    int[] attrs = new int[]{R.attr.selectableItemBackground};
+                    TypedArray typedArray = getContext().obtainStyledAttributes(attrs);
+                    int selectableItemBackground = typedArray.getResourceId(0, 0);
+                    txt.setForeground(getContext().getDrawable(selectableItemBackground));
+                }
+                txt.setPadding(20, 10, 20, 10);
+                if (i % 2 == 0) {
+                    txt.setBackgroundResource(R.drawable.table);
+                }
+
+                txt.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View clicked) {
+                        choosedCell[0] = txt;
+                        popup_window(v, clicked, records);
+                    }
+                });
+
+                if (i == 0) {
+                    txt.setTypeface(null, Typeface.BOLD);
+                    txt.setPadding(20, 20, 20, 20);
+                    txt.setOnClickListener(null);
+                }
+                tRow.addView(txt);
+            }
+            tlGridTable.addView(tRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
+        }
+
+    }
 
     private void setClipboard(Context context, String label, String text) {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
@@ -180,27 +178,24 @@ public class RecordsListFragment extends Fragment {
         String text = "";
         TableLayout tl = (TableLayout) ((TableRow) textView.getParent()).getParent();
         int indexOfTableRow = ((TableRow) textView.getParent()).indexOfChild(textView);
-        System.out.println("Index rzedu: "+ indexOfTableRow);
         for (int i = 1; i < tl.getChildCount(); i++) {
             TableRow tRow = (TableRow) tl.getChildAt(i);
-            System.out.println("iteracja i = "+i);
             for (int j = 0; j < tRow.getChildCount(); j++) {
-                System.out.println("--j = "+j);
                 if (j == indexOfTableRow) {
-                    if(i == (tl.getChildCount()-1)){
+                    if (i == (tl.getChildCount() - 1)) {
                         TextView v = (TextView) tRow.getChildAt(j);
                         text += v.getText();
                         continue;
                     }
                     TextView v = (TextView) tRow.getChildAt(j);
-                        text += v.getText() + ", ";
+                    text += v.getText() + ", ";
                 }
             }
         }
         return text;
     }
 
-    public void popup_window(View v) {
+    public void popup_window(View root, View v, List records) {
         View menuItemView = v;
         PopupMenu popupMenu = new PopupMenu(getActivity(), menuItemView);
         popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
@@ -209,8 +204,13 @@ public class RecordsListFragment extends Fragment {
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @SuppressLint("ResourceType")
             public boolean onMenuItemClick(MenuItem item) {
+                TextView selectedCell = (TextView) v;
                 TableRow vParent = (TableRow) v.getParent();
                 TableLayout tl = (TableLayout) vParent.getParent();
+
+                List headersNameList = (List) records.get(0);
+
+                int selectedRowIndex = tl.indexOfChild(vParent);
                 switch (item.getItemId()) {
                     case R.id.copy_row:
                         String copied_row = iterateRow(vParent);
@@ -223,13 +223,67 @@ public class RecordsListFragment extends Fragment {
                         Toast.makeText(getActivity(), "Column copied to clipboard", Toast.LENGTH_LONG).show();
                         return true;
                     case R.id.option_1:
-                        Toast.makeText(getActivity(), "Record added", Toast.LENGTH_LONG).show();
+                        String[][] rowData = new String[vParent.getChildCount()][2];
+                        for (int i = 0; i < headersNameList.size(); i++) {
+                            String[] nameValArr = new String[2];
+                            nameValArr[0] = (String) headersNameList.get(i);
+                            nameValArr[1] = "";
+                            rowData[i] = nameValArr;
+                        }
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("selectedData", rowData);
+                        bundle.putString("table_name", RecordsListFragmentArgs.fromBundle(getArguments()).getTableName());
+
+                        Navigation.findNavController(root).navigate(R.id.action_recordsFragment_to_addUpdateFragment, bundle);
                         return true;
                     case R.id.option_2:
-                        Toast.makeText(getActivity(), "Record edited", Toast.LENGTH_LONG).show();
+                        rowData = new String[vParent.getChildCount()][2];
+                        for (int i = 0; i < headersNameList.size(); i++) {
+                            String[] nameValArr = new String[2];
+                            nameValArr[0] = (String) headersNameList.get(i);
+                            nameValArr[1] = (String) ((ArrayList) records.get(selectedRowIndex)).get(i);
+                            rowData[i] = nameValArr;
+                        }
+
+                        bundle = new Bundle();
+                        bundle.putSerializable("selectedData", rowData);
+                        bundle.putString("table_name", RecordsListFragmentArgs.fromBundle(getArguments()).getTableName());
+
+                        Navigation.findNavController(root).navigate(R.id.action_recordsFragment_to_addUpdateFragment, bundle);
                         return true;
                     case R.id.option_3:
-                        tl.removeView(vParent);
+                        Async asyncTask = (Async) new Async(new AsyncResponse() {
+                            @Override
+                            public void processFinish(List pkey) {
+                                List<String> pkeyList = pkey;
+                                String pkey_name = pkeyList.get(0);
+
+
+                                //find index of primary key in records list
+                                int primaryKeyIndex = 0;
+                                for (int i = 0; i < headersNameList.size(); i++) {
+                                    if (headersNameList.get(i).equals(pkey_name)) {
+                                        primaryKeyIndex = i;
+                                    }
+                                }
+
+                                String idCellContent = (String) ((ArrayList) records.get(selectedRowIndex)).get(primaryKeyIndex);
+                                //delete selected row from list
+                                records.remove(selectedRowIndex);
+                                //refresh table with updated list
+                                refreshTable(root, records);
+                                //delete record from database
+
+                                new Async(new AsyncResponse() {
+                                    @Override
+                                    public void processFinish(List records) {
+
+                                    }
+                                }).execute("delete " + RecordsListFragmentArgs.fromBundle(getArguments()).getTableName() + " " + idCellContent);
+
+                            }
+                        }).execute("primarykey " + RecordsListFragmentArgs.fromBundle(getArguments()).getTableName());
+
                         Toast.makeText(getActivity(), "Record deleted", Toast.LENGTH_LONG).show();
                         return true;
                     default:

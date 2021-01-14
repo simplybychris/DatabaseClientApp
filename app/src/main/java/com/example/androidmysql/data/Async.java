@@ -18,9 +18,9 @@ public class Async extends AsyncTask<String, Void, Void> {
     private static final String DRIVER = "com.mysql.jdbc.Driver";
     private String host = "localhost";
     private String port = "3306";
-    private String database="android";
+    private String database = "android";
     private String user = "andro";
-    private String password="andro";
+    private String password = "andro";
 
     String error = "";
     Integer columncount = 0;
@@ -30,7 +30,7 @@ public class Async extends AsyncTask<String, Void, Void> {
 
     public AsyncResponse delegate = null;
 
-    public Async(AsyncResponse delegate){
+    public Async(AsyncResponse delegate) {
         this.delegate = delegate;
     }
 
@@ -52,10 +52,11 @@ public class Async extends AsyncTask<String, Void, Void> {
         /**
          *  SHOW TABLES NAMES => Display all tables available
          */
+
         if (Arrays.asList(command).contains("tables")) {
             try {
                 Class.forName(DRIVER);
-                Connection connection = DriverManager.getConnection("jdbc:mysql://"+host+":"+port+"/"+database, user, password);
+                Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery("show tables");
                 while (resultSet.next()) {
@@ -66,13 +67,44 @@ public class Async extends AsyncTask<String, Void, Void> {
                 error = e.toString();
             }
         }
+        if (Arrays.asList(command).contains("insert")) {
+            try {
+                Class.forName(DRIVER);
+                Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
+                Statement statement = connection.createStatement();
+                System.out.println("argument: " + arg0[0]);
+                statement.executeUpdate(arg0[0]);
+//                }
+            } catch (Exception e) {
+                error = e.toString();
+            }
+        }
         /**
          *  SHOW [table_name] => Display all records of certain table
          */
+        //for example: primarykey user
+        if (Arrays.asList(command).contains("primarykey")) {
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
+                DatabaseMetaData md = connection.getMetaData();
+                ResultSet resultSet = md.getPrimaryKeys(null, null, queryTable);
+
+                String pkey = "";
+                while (resultSet.next()) {
+//                 ===  Primary key name  ===
+                    pkey = resultSet.getString(4);
+                }
+                recordsList.add(pkey);
+
+            } catch (Exception e) {
+                error = e.toString();
+            }
+        }
         if (Arrays.asList(command).contains("show")) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection("jdbc:mysql://"+host+":"+port+"/"+database, user, password);
+                Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM " + queryTable);
                 ResultSetMetaData md = resultSet.getMetaData();
@@ -88,7 +120,7 @@ public class Async extends AsyncTask<String, Void, Void> {
 
                 while (resultSet.next()) {
                     ArrayList<String> rowRecord = new ArrayList();
-                    for(int i=1;i<=columncount;i++){
+                    for (int i = 1; i <= columncount; i++) {
                         rowRecord.add(resultSet.getString(i));
                     }
                     nestedList.add(rowRecord);
@@ -100,7 +132,7 @@ public class Async extends AsyncTask<String, Void, Void> {
         } else if (Arrays.asList(command).contains("delete")) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection("jdbc:mysql://"+host+":"+port+"/"+database, user, password);
+                Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
                 DatabaseMetaData md = connection.getMetaData();
                 ResultSet resultSet = md.getPrimaryKeys(null, null, queryTable);
 
@@ -113,7 +145,6 @@ public class Async extends AsyncTask<String, Void, Void> {
 
                 Statement statement = connection.createStatement();
                 statement.executeUpdate("DELETE FROM " + queryTable + " WHERE " + pkey + "=" + id);
-
                 System.out.println("Record deleted successfully");
                 while (resultSet.next()) {
 
@@ -127,29 +158,15 @@ public class Async extends AsyncTask<String, Void, Void> {
             error = "Wrong command";
         }
 
-        //TODO select specified user by id
-
         return null;
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        if(!nestedList.isEmpty()){
+        if (!nestedList.isEmpty()) {
             delegate.processFinish(nestedList);
-        } else{
+        } else {
             delegate.processFinish(recordsList);
         }
     }
-//    @Override
-//    protected void onPostExecute(Void aVoid) {
-//
-//        text.setText(records);
-//
-//        if (error != "")
-//
-//            text.setText(error);
-//
-//        super.onPostExecute(aVoid);
-//
-//    }
 }
